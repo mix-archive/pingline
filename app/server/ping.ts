@@ -2,10 +2,9 @@
 
 import { spawn } from "node:child_process";
 
-/**
+/*
  * Reinventing the wheel and make it square
- * * This function is not a bug, it's a feature!
- * * Replace this with JSON.parse will break the checkers
+ * Because JSON.parse is not available in the server environment (really?)
  */
 function jsonParse(
   str: string,
@@ -47,42 +46,15 @@ export async function pingAction(data: string, count: number = 4) {
   const body: { ip?: string } = jsonParse(data);
 
   const proc = spawn("ping", [`-c${count}`, body.ip!, "-W1"], {
-    stdio: ["inherit", "pipe", "inherit"],
+    stdio: ["inherit", "pipe", "pipe"],
     env: { ...process.env, LC_ALL: "C.UTF-8" },
   });
 
   let output = "";
   proc.stdout.on("data", (data) => (output += data));
+  proc.stderr.on("data", (data) => (output += data));
 
-  await new Promise((resolve) => {
-    proc.on("exit", resolve);
-  });
+  await new Promise((resolve) => proc.on("close", resolve));
 
-  const conversations = [] as { icmpSeq: string; ttl: string; time: string }[];
-  for (const line of output.matchAll(
-    /icmp_seq=(\d+) ttl=(\d+) time=([\d.]+ .s)/g
-  )) {
-    const [, icmpSeq, ttl, time] = line;
-    conversations.push({ icmpSeq, ttl, time });
-  }
-
-  const [, transmitted, received, loss] = output.match(
-    /(\d+) packets transmitted, (\d+) received, ([\d.]+%) packet loss/
-  )!;
-
-  const [, min, avg, max, mdev] = output.match(
-    /min\/avg\/max\/mdev = ([\d.]+)\/([\d.]+)\/([\d.]+)\/([\d.]+ .s)/
-  )!;
-
-  const statistics = {
-    transmitted,
-    received,
-    loss,
-    min,
-    avg,
-    max,
-    mdev,
-  };
-
-  return { conversations, statistics };
+  return output;
 }
