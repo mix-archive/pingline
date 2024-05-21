@@ -96,18 +96,30 @@ class Exploit:
             return False
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.CRITICAL)
 
 if __name__ == "__main__":
     host = "localhost"
     port = 3000
 
     checker = Checker(host, port)
-    exploit = Exploit(host, port)
+    service_online = checker.check()
+    exploitable = False
 
-    if checker.check():
-        print("Service is up")
-        if exploit.exploit():
-            print("Exploited")
-        else:
-            print("Exploit failed")
+    if service_online:
+        exp = Exploit(host, port)
+        exploitable = exp.exploit()
+
+    print(
+        json.dumps(
+            {
+                "correct": service_online and not exploitable,
+                "msg": (
+                    "服务异常"
+                    if not service_online
+                    else ("评测正确" if not exploitable else "利用成功")
+                ),
+            },
+            ensure_ascii=False,
+        )
+    )
