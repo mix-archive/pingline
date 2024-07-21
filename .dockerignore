@@ -3,7 +3,7 @@
 # docker
 Dockerfile
 docker-compose.yml
-private/
+.git
 
 # dependencies
 /node_modules

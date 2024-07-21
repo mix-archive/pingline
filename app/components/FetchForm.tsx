@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
 import { pingAction } from "@/app/server/ping";
 
@@ -11,6 +11,13 @@ export default function FetchForm() {
       pingAction(JSON.stringify(Object.fromEntries(payload.entries()))),
     null
   );
+
+  useEffect(() => {
+    console.log(
+      "%c🚀 Checkout /ppt.zip for easter egg.",
+      "background: #000; color: #fff; font-size: 20px; padding: 10px; border-radius: 5px;"
+    );
+  });
 
   return (
     <form ref={formRef} action={formAction}>

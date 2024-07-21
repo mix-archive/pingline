@@ -2,6 +2,9 @@ name: pingline
 
 services:
   app:
-    build: .
+    build:
+      dockerfile: private/Dockerfile
+      context: .
+      target: private
     ports:
       - "3000:3000"
