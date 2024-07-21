@@ -23,7 +23,11 @@ export default function FetchForm() {
         required
       />
 
-      {state && <pre className="bg-gray-800 bg-opacity-50 rounded whitespace-pre-wrap p-2 my-2">{state}</pre>}
+      {state && (
+        <pre className="bg-gray-800 bg-opacity-50 rounded whitespace-pre-wrap p-2 my-2">
+          {state}
+        </pre>
+      )}
 
       <button
         type="submit"
