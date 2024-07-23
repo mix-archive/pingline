@@ -7,4 +7,4 @@ services:
       context: .
       target: private
     ports:
-      - "3000:3000"
+      - "3000:80"
