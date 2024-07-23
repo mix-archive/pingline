@@ -22,9 +22,11 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1001,gid=1001 \
 
 USER root
 COPY ./entrypoint.sh /
-ENV NODE_ENV=production \
+ENV PORT=80 \
+    NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     COREPACK_ENABLE_NETWORK=0
+EXPOSE 80/tcp
 ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
 
 # This is a private image that is not meant to be shared
