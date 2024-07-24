@@ -1,6 +1,7 @@
 import json
 import logging
 import requests
+import time
 import re
 
 logger = logging.getLogger(__name__)
@@ -32,12 +33,26 @@ def _obtain_next_action(base_url: str) -> str:
     return action_id
 
 
+def retried_obtain_next_action(base_url: str) -> str:
+    start_time = time.monotonic()
+    last_exception = None
+    while time.monotonic() - start_time < 60:
+        try:
+            return _obtain_next_action(base_url)
+        except requests.HTTPError:
+            raise
+        except requests.RequestException as e:
+            logger.warning("Failed to obtain action id: %s", e)
+            last_exception = e
+    raise Exception("Failed to obtain action id") from last_exception
+
+
 class Checker:
     def __init__(self, host: str, port: int):
         self.request_url = f"http://{host}:{port}"
 
     def _check(self):
-        action_id = _obtain_next_action(self.request_url)
+        action_id = retried_obtain_next_action(self.request_url)
 
         resp = requests.post(
             self.request_url,
@@ -64,7 +79,7 @@ class Exploit:
         self.request_url = f"http://{host}:{port}/"
 
     def _exploit(self):
-        action_id = _obtain_next_action(self.request_url)
+        action_id = retried_obtain_next_action(self.request_url)
 
         resp = requests.post(
             self.request_url,
