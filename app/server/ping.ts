@@ -29,7 +29,7 @@ function jsonParse(
         .replace(/\\(u([0-9a-fA-F]{4})|.)/g, (_, m: string, code: string) =>
           m === "u"
             ? String.fromCharCode(parseInt(code, 16))
-            : { b: "\b", f: "\f", n: "\n", r: "\r", t: "\t" }[m] ?? m
+            : ({ b: "\b", f: "\f", n: "\n", r: "\r", t: "\t" }[m] ?? m)
         );
     } else if (value.startsWith("{")) {
       if (!(key in ret)) ret[key] = {};
