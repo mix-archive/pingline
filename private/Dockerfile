@@ -3,7 +3,7 @@ RUN useradd -m -s /bin/bash -u 1001 app && \
     mkdir /app /pnpm && \
     chown app:app /app /pnpm
 RUN apt-get update && \
-    apt-get install iputils-ping bash tini -y && \
+    apt-get install --no-install-recommends -y iputils-ping bash tini unzip python3 python3-requests && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
